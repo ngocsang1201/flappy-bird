@@ -83,7 +83,7 @@ document.addEventListener('keydown', () => {
     bird.y -= 60
 })
 
-setStorage = () => localStorage.setItem(FLAPPY_BIRD_STORAGE_KEY, JSON.stringify({
+const setStorage = () => localStorage.setItem(FLAPPY_BIRD_STORAGE_KEY, JSON.stringify({
     highScore: score
 }))
 
