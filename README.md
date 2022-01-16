@@ -1,2 +1,1 @@
-# flappy-bird
-link glitch : https://flappy-bird-12.glitch.me/
+[https://ngocsang1201.github.io/flappy-bird/](https://ngocsang1201.github.io/flappy-bird/)
