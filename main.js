@@ -20,53 +20,70 @@ let storageObj = JSON.parse(localStorage.getItem(FLAPPY_BIRD_STORAGE_KEY)) || {}
 let highScore = storageObj.highScore === undefined ? 0 : storageObj.highScore;
 
 const speed = 5;
+
 const distance = {
   horizontal: 140,
   vertical: 0,
 };
+
 let bird = {
   x: background.width / 5,
   y: background.height / 2,
 };
+
 let chimneys = [];
 chimneys[0] = {
   x: canvas.width,
   y: 0,
 };
 
+const handleClick = (e) => {
+  if (e.target.tagName === 'BUTTON') return;
+  bird.y -= 60;
+};
+
+document.addEventListener('keydown', handleClick);
+document.addEventListener('click', handleClick);
+
+const startGame = () => {
+  run();
+};
+
 const run = () => {
   context.drawImage(background, 0, 0);
   context.drawImage(birdImg, bird.x, bird.y);
 
-  for (let i = 0; i < chimneys.length; i++) {
+  for (const chimney of chimneys) {
     distance.vertical = chimneyTop.height + distance.horizontal;
-    context.drawImage(chimneyTop, chimneys[i].x, chimneys[i].y);
-    context.drawImage(chimneyBot, chimneys[i].x, chimneys[i].y + distance.vertical);
+    context.drawImage(chimneyTop, chimney.x, chimney.y);
+    context.drawImage(chimneyBot, chimney.x, chimney.y + distance.vertical);
 
-    chimneys[i].x -= speed;
+    chimney.x -= speed;
 
-    if (chimneys[i].x === canvas.width / 2) {
+    if (chimney.x === canvas.width / 2) {
       chimneys.push({
         x: canvas.width,
         y: Math.floor(Math.random() * chimneyTop.height) - chimneyTop.height,
       });
     }
-    if (chimneys[i].x === 0) {
+
+    if (chimney.x === 0) {
       chimneys.splice(0, 1);
     }
-    if (chimneys[i].x === bird.x) {
+
+    if (chimney.x === bird.x) {
       score++;
     }
 
     if (
       bird.y + birdImg.height === canvas.height ||
-      (bird.x + birdImg.width >= chimneys[i].x &&
-        bird.x <= chimneys[i].x + chimneyTop.width &&
-        (bird.y <= chimneys[i].y + chimneyTop.height ||
-          bird.y + birdImg.height >= chimneys[i].y + distance.vertical))
+      (bird.x + birdImg.width >= chimney.x &&
+        bird.x <= chimney.x + chimneyTop.width &&
+        (bird.y <= chimney.y + chimneyTop.height ||
+          bird.y + birdImg.height >= chimney.y + distance.vertical))
     ) {
       if (score > highScore) {
-        setStorage();
+        localStorage.setItem(FLAPPY_BIRD_STORAGE_KEY, JSON.stringify({ highScore: score }));
       }
       return;
     }
@@ -79,16 +96,4 @@ const run = () => {
   requestAnimationFrame(run);
 };
 
-document.addEventListener('keydown', () => {
-  bird.y -= 60;
-});
-
-const setStorage = () =>
-  localStorage.setItem(
-    FLAPPY_BIRD_STORAGE_KEY,
-    JSON.stringify({
-      highScore: score,
-    })
-  );
-
-run();
+document.querySelector('button').addEventListener('click', startGame);
